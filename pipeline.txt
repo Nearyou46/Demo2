@@ -1,0 +1,36 @@
+node {
+    def remote = [:]
+    withCredentials([file(credentialsId: 'lv646', variable: 'lv646')]) {
+        remote.identityFile = lv646
+        remote.name = 'test'
+        remote.host = '34.123.64.22'
+        remote.user = 'borys'
+        remote.allowAnyHosts = true
+        
+        stage('git pull') {
+            echo "git pull start ..."
+            sshCommand remote: remote, command: 'sudo rm -rf Dir'
+        
+        stage('git pull') {
+            echo "git pull start ..."
+            sshCommand remote: remote, command: 'sudo docker stop $(sudo docker ps -aq)'    
+            sshCommand remote: remote, command: 'sudo docker rm $(sudo docker ps -aq)'
+            
+        stage('git pull') {
+            echo "git pull start ..."
+            sshCommand remote: remote, command: 'git clone --branch main https://github.com/OleksiiBodnar/Dir.git'          
+                            
+                       }
+                   
+        stage('docker-compose up') {
+                       
+                          echo "docker-compose up start ..."
+                          
+                         writeFile file: 'start.sh', text: 
+                         "cd Dir\nsudo docker-compose up --scale teachfront=2 --scale teachback=2  -d"
+                         sshScript remote: remote, script: "start.sh"
+                       }               
+}
+}
+}
+}
